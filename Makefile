@@ -12,3 +12,9 @@ bin/quartus_server: repos/cascade/build/tools/quartus_server bin/cascade
 
 qserver: bin/quartus_server
 	./bin/quartus_server --path $(shell pwd)/repos/intelFPGA_lite/19.1/quartus/ --port 9900
+
+chk_jtagconfig: vendor/intel/intel-de10/quartus/bin/jtagconfig
+	sudo ./vendor/intel/intel-de10/quartus/bin/jtagconfig
+
+ssh_de10:
+	ssh root@192.168.7.1
