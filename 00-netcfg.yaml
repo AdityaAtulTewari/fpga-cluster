@@ -1,0 +1,10 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    usb0:
+      addresses: [0.0.0.0]
+      gateway4: 192.168.7.5
+      nameservers:
+        addresses: [8.8.8.8]
+
