@@ -29,23 +29,17 @@ chk_jtagconfig: $(QUARTUS)/bin/jtagconfig
 	sudo ./$(QUARTUS)/bin/jtagconfig
 
 /tmp/fpga-cluster/setup_routes:
-	make chk_jtagconfig
 	echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward > /dev/null
 	sudo iptables -P FORWARD ACCEPT
 	sudo iptables -A POSTROUTING -t nat -j MASQUERADE -s 192.168.7.0/24
 	mkdir -p /tmp/fpga-cluster
 	touch $@
 
-setup_routes: /tmp/fpga-cluster/setup_routes
-
-ssh_prep: setup_routes chk_jtagconfig
-	-ssh root@${DEVI_IP} ifconfig usb0 ${DEVI_IP} netmask 255.255.255.0
-	-ssh root@${DEVI_IP} route add default gw ${HOST_IP}
-	ssh root@${DEVI_IP} route
+ssh_prep: /tmp/fpga-cluster/setup_routes
 	sudo ifconfig $(DEVICES) $(HOST_IP) netmask 255.255.255.0
-	ssh root@${DEVI_IP} 'if [ -z "$(shell ssh root@${DEVI_IP} cat /etc/resolv.conf |grep 8.8.8.8)" ]; then echo "nameserver 8.8.8.8" >> /etc/resolv.conf; fi'
-	#ssh root@${DEVI_IP} git clone ${CA_REPO}
-	#ssh root@${DEVI_IP} cd cascade && ./setup --silent --no-install
 
 ssh_de10: ssh_prep
-	ssh root@$(DEVI_IP)
+	ssh fpga@$(DEVI_IP)
+
+start_microcom:
+	sudo microcom -p /dev/ttyUSB0 115,200-8-N-1
