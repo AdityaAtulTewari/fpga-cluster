@@ -17,13 +17,16 @@ $(CASCADE)/build/tools/cascade:
 	cd $(CASCADE) && ./setup --silent --no-install
 
 bin/cascade: $(CASCADE)/build/tools/cascade
+	mkdir -p bin
 	ln -s ../$< ./$@
 
-bin/quartus_server: $(CASCADE)/build/tools/quartus_server bin/cascade
+bin/quartus_server: $(CASCADE)/build/tools/quartus_server
+	mkdir -p bin
 	ln -s ../$< ./$@
 
-qserver: bin/quartus_server
-	./bin/quartus_server --path $(shell pwd)/$(QUARTUS) --port 9900
+qserver: src/qs-container/Dockerfile
+	cd src/qs-container && docker build -t billy .
+	docker run -ti -p 9900:9900 -v $(shell pwd)/$(QUARTUS):/quartus billy quartus_server --path /quartus --port 9900
 
 chk_jtagconfig: $(QUARTUS)/bin/jtagconfig
 	sudo ./$(QUARTUS)/bin/jtagconfig
@@ -41,5 +44,5 @@ ssh_prep: /tmp/fpga-cluster/setup_routes
 ssh_de10: ssh_prep
 	ssh fpga@$(DEVI_IP)
 
-start_microcom:
+start_microcom: ssh_prep
 	sudo microcom -p /dev/ttyUSB0 115,200-8-N-1
