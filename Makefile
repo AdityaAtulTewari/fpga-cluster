@@ -13,6 +13,7 @@ CA_REPO=https://github.com/vmware/cascade.git
 
 
 $(CASCADE)/build/tools/cascade:
+	git submodule init && git submodule update --recursive
 	git submodule foreach git pull origin master
 	cd $(CASCADE) && ./setup --silent --no-install
 
