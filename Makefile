@@ -7,7 +7,7 @@ QUARTUS=vendor/intel/intel-de10/quartus
 HOST_IP=192.168.7.5
 DEVI_IP=192.168.7.1
 
-DEVICES=$(shell ifconfig |grep --color=never enp0s20 | cut -f1 -d":")
+DEVICES=$(shell ifconfig |grep --color=never enp0s2 | cut -f1 -d":")
 
 CA_REPO=https://github.com/vmware/cascade.git
 
@@ -43,7 +43,7 @@ ssh_prep: /tmp/fpga-cluster/setup_routes
 	sudo ifconfig $(DEVICES) $(HOST_IP) netmask 255.255.255.0
 
 ssh_de10: ssh_prep
-	ssh fpga@$(DEVI_IP)
+	-ssh fpga@$(DEVI_IP)
 
 start_microcom: ssh_prep
 	sudo microcom -p /dev/ttyUSB0 115,200-8-N-1
